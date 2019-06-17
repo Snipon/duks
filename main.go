@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -38,30 +36,17 @@ func Middleware(next http.Handler) http.Handler {
 func GetDuks(w http.ResponseWriter) {
 	var week = WeekNumber(time.Now())
 
-	jsonFile, err := os.Open("employees.json")
+	names := GetNames()
 
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println("Successfully Opened users.json")
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	var employees Employees
-
-	json.Unmarshal(byteValue, &employees)
 	var count = 0
 	for i := 0; i < week; i++ {
-		if count > len(employees.Employees) {
+		if count > len(names.Employees) {
 			count = 0
 		}
 		count++
 	}
 
-	var duks = employees.Employees[count-1].Name
+	var duks = names.Employees[count-1].Name
 
 	msg := Message{
 		Message: fmt.Sprintf("It is week %d, and %s has the duks.", week, duks),
@@ -70,7 +55,6 @@ func GetDuks(w http.ResponseWriter) {
 	output, _ := json.Marshal(&msg)
 
 	w.Write([]byte(output))
-
 }
 
 // WeekNumber - Get week number.
