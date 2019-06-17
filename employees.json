@@ -1,0 +1,39 @@
+{
+  "employees": [{
+      "Name": "Andreas"
+    },
+    {
+      "Name": "Anja"
+    },
+    {
+      "Name": "Christian"
+    },
+    {
+      "Name": "Henrik"
+    },
+    {
+      "Name": "Joachim"
+    },
+    {
+      "Name": "Lille-Jonas"
+    },
+    {
+      "Name": "Martin"
+    },
+    {
+      "Name": "Niels"
+    },
+    {
+      "Name": "Rasmus"
+    },
+    {
+      "Name": "Simon"
+    },
+    {
+      "Name": "Sofie"
+    },
+    {
+      "Name": "Stor-Jonas"
+    }
+  ]
+}
