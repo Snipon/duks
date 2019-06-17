@@ -13,17 +13,17 @@ import (
 
 // Employee model.
 type Employee struct {
-	Name string "json:name"
+	Name string `json:"name"`
 }
 
 // Employees model.
 type Employees struct {
-	Employees []Employee "json:employees"
+	Employees []Employee `json:"employees"`
 }
 
 // Message model.
 type Message struct {
-	Message string "json:message"
+	Message string `json:"message"`
 }
 
 // Middleware globals.
@@ -73,7 +73,7 @@ func GetDuks(w http.ResponseWriter) {
 
 }
 
-// GetWeekNumber - Get week number.
+// WeekNumber - Get week number.
 func WeekNumber(now time.Time) int {
 	_, thisWeek := now.ISOWeek()
 	return thisWeek
