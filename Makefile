@@ -3,8 +3,8 @@ deps:
 	go install -v ./...
 
 build:
-	@make decrypt
-	@docker build -t snipon/duks_api .
+	@echo 'Building docker container...'
+	@docker build --build-arg gpg_secret=$GPG_SECRET . -t snipon/duks_api
 
 run:
 	@echo 'Starting API...'
@@ -14,5 +14,5 @@ clean:
 	docker rf -f duks-api
 
 decrypt:
-	@gpg -d token.gpg > token.json
-	@gpg -d credentials.gpg > credentials.json
+	@gpg --batch --yes --passphrase ${GPG_SECRET} -o token.json -d token.gpg
+	@gpg --batch --yes --passphrase ${GPG_SECRET} -o credentials.json -d credentials.gpg
