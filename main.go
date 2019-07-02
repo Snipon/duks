@@ -1,93 +1,53 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"net/http"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 	"time"
 )
 
 // Employee model.
 type Employee struct {
-	Name string `json:"name"`
+	Name string
 }
 
 // Employees model.
 type Employees struct {
-	Employees []Employee `json:"employees"`
-}
-
-// Message model.
-type Message struct {
-	Message string `json:"message"`
-}
-
-// Middleware globals.
-func Middleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-		next.ServeHTTP(w, r)
-	})
+	Employees []Employee
 }
 
 // GetDuks - Return name of employee.
-func GetDuks(w http.ResponseWriter) {
-	var week = WeekNumber(time.Now())
-
+func GetDuks() string {
 	names := GetNames()
-
-	var count = 0
-	for i := 0; i < week; i++ {
-		if count > len(names.Employees) {
-			count = 0
-		}
-		count++
+	count := len(names.Employees)
+	week := getWeekNumber(time.Now())
+	i := week % count
+	if i == 0 {
+		i = count
 	}
-
-	var duks = names.Employees[count-1].Name
-
-	msg := Message{
-		Message: fmt.Sprintf("It is week %d, and %s has the duks.", week, duks),
-	}
-
-	output, _ := json.Marshal(&msg)
-
-	w.Write([]byte(output))
+	name := names.Employees[i-1].Name
+	return name
 }
 
 // WeekNumber - Get week number.
-func WeekNumber(now time.Time) int {
+func getWeekNumber(now time.Time) int {
 	_, thisWeek := now.ISOWeek()
 	return thisWeek
 }
 
+// Output - Generic output struct.
+type Output struct {
+	Name string `json:"name"`
+}
+
+// Handler - Lambda handler.
+func Handler(events.APIGatewayProxyResponse) (events.APIGatewayProxyResponse, error) {
+	return events.APIGatewayProxyResponse{
+		Body:       GetDuks(),
+		StatusCode: 200,
+	}, nil
+}
+
 func main() {
-	var Router = chi.NewRouter()
-
-	// Router.
-	Router.Use(middleware.RequestID)
-	Router.Use(middleware.RealIP)
-	Router.Use(middleware.Logger)
-	Router.Use(middleware.Recoverer)
-	Router.Use(middleware.Timeout(60 * time.Second))
-	Router.Use(Middleware)
-
-	Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		msg := Message{
-			Message: fmt.Sprintf("Yes, this is API."),
-		}
-
-		output, _ := json.Marshal(&msg)
-
-		w.Write([]byte(output))
-	})
-
-	Router.Get("/duks", func(w http.ResponseWriter, r *http.Request) {
-		GetDuks(w)
-	})
-
-	fmt.Println(http.ListenAndServe(":3000", Router))
-
+	lambda.Start(Handler)
 }

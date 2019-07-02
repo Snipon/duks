@@ -64,9 +64,19 @@
   </div>
   <script>
     const getData = async () => {
-      const res = await fetch('http://35.228.194.40/duks')
+      const url = 'https://46gzyvr2z7.execute-api.eu-north-1.amazonaws.com/prod/duks'
+      const headers = new Headers({
+        'Access-Control-Allow-Origin': '*.amazonaws.com',
+        'Content-Type': 'text/plain',
+        'x-api-key': 'N1bvvt46Kv8e1c0FZEPb3aZr2ab4G2GP7Ar0XGB6'
+      })
+      const res = await fetch(url, {
+        method: 'GET',
+        headers
+      })
       const data = await res.json()
-      document.querySelector('#nameContainer').innerText = data.message
+      console.log(data)
+      document.querySelector('#nameContainer').innerText = data
     }
     window.onload = getData()
   </script>
